@@ -1,8 +1,9 @@
+import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:observable_flutter_cube/renderer/object_3d.dart';
 import 'package:observable_flutter_cube/renderer/project.dart';
 
-class View3D extends StatelessWidget {
+class View3D extends StatefulWidget {
   final Object3D object;
 
   const View3D({
@@ -11,17 +12,45 @@ class View3D extends StatelessWidget {
   });
 
   @override
+  State<View3D> createState() => _View3DState();
+}
+
+class _View3DState extends State<View3D> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 10),
+    );
+    _controller.repeat();
+  }
+
+  void stopAnimation() => _controller.stop();
+
+  @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _View3DPainter(object),
+    return GestureDetector(
+      onTap: stopAnimation,
+      child: CustomPaint(
+        painter: _View3DPainter(
+          widget.object,
+          animation: _controller,
+        ),
+      ),
     );
   }
 }
 
 class _View3DPainter extends CustomPainter {
   final Object3D object;
+  final Animation<double> animation;
 
-  _View3DPainter(this.object);
+  _View3DPainter(this.object, {required this.animation})
+      : super(repaint: animation);
 
   final _paint = Paint()..color = Colors.red;
 
@@ -39,7 +68,7 @@ class _View3DPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     for (final (i, point) in object.points.indexed) {
       const pointSize = 5.0;
-      var screenPoint = project(point);
+      var screenPoint = project(point, animation.value * math.pi * 2);
 
       var color = _palette[i % _palette.length];
       _paint.color = color;
