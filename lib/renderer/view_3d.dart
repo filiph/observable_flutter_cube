@@ -39,16 +39,16 @@ class _View3DPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     for (final (i, point) in object.points.indexed) {
       const pointSize = 5.0;
-      var screenPoint = project(point, size);
+      var screenPoint = project(point);
 
       var color = _palette[i % _palette.length];
       _paint.color = color;
 
-      canvas.drawCircle(
-        Offset(screenPoint.x, screenPoint.y),
-        pointSize,
-        _paint,
-      );
+      // Remaps coordinates from [-1, 1] to the [0, viewport].
+      var x = (1.0 + screenPoint.x) * size.width / 2;
+      var y = (1.0 - screenPoint.y) * size.height / 2;
+
+      canvas.drawCircle(Offset(x, y), pointSize, _paint);
     }
   }
 
