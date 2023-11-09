@@ -32,19 +32,13 @@ Vector2 project(Vector3 point, double rotation) {
     far,
   );
 
-  final perspectiveMatrix = makePerspectiveMatrix(
-    radians(fov),
-    aspectRatio,
-    near,
-    far,
-  );
+  final transformationMatrix = projectionMatrix * viewMatrix;
 
-  final transformationMatrix = perspectiveMatrix * viewMatrix;
-  final newPoint = point.clone();
-  newPoint.applyMatrix4(transformationMatrix);
+  final projectiveCoords = Vector4(point.x, point.y, point.z, 1.0);
+  projectiveCoords.applyMatrix4(transformationMatrix);
 
-  var x = newPoint.x;
-  var y = newPoint.y;
+  var x = projectiveCoords.x / projectiveCoords.w;
+  var y = projectiveCoords.y / projectiveCoords.w;
 
   return Vector2(x, y);
 }
