@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:vector_math/vector_math_64.dart';
 
-Vector2 project(Vector3 point, double rotation, double aspectRatio) {
+(Vector2, double) project(Vector3 point, double rotation, double aspectRatio) {
   final viewMatrix = makeViewMatrix(
     Vector3(
           0.25,
@@ -40,5 +40,5 @@ Vector2 project(Vector3 point, double rotation, double aspectRatio) {
   var x = projectiveCoords.x / projectiveCoords.w;
   var y = projectiveCoords.y / projectiveCoords.w;
 
-  return Vector2(x, y);
+  return (Vector2(x, y), projectiveCoords.w);
 }

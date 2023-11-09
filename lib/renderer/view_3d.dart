@@ -59,7 +59,14 @@ class _View3DPainter extends CustomPainter {
   _View3DPainter(this.object, {required this.animation})
       : super(repaint: animation);
 
-  final _paint = Paint()..color = Colors.red;
+  final _paint = Paint()
+    ..color = const Color(0xFFf1ca00)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 4.0;
+
+  final _background = Paint()
+    ..color = const Color(0xFF1a1616)
+    ..style = PaintingStyle.fill;
 
   static const _palette = [
     // Color(0xFF4f186b),
@@ -74,19 +81,23 @@ class _View3DPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     var aspectRatio = size.width / size.height;
+    final pointSize = size.width / 70;
+    _paint.strokeWidth = size.width / 150;
 
-    for (final (i, point) in object.points.indexed) {
-      const pointSize = 5.0;
-      var screenPoint =
-          project(point, animation.value * math.pi * 2, aspectRatio);
+    final screenPoints = object.points
+        .map((p) => project(p, animation.value * math.pi * 2, aspectRatio))
+        .toList();
+    screenPoints.sort((a, b) => b.$2.compareTo(a.$2));
 
-      var color = _palette[i % _palette.length];
-      _paint.color = color;
+    for (final (i, (screenPoint, _)) in screenPoints.indexed) {
+      // var color = _palette[i % _palette.length];
+      // _paint.color = color;
 
       // Remaps coordinates from [-1, 1] to the [0, viewport].
       var x = (1.0 + screenPoint.x) * size.width / 2;
       var y = (1.0 - screenPoint.y) * size.height / 2;
 
+      canvas.drawCircle(Offset(x, y), pointSize, _background);
       canvas.drawCircle(Offset(x, y), pointSize, _paint);
     }
   }
