@@ -3,13 +3,10 @@ import 'package:vector_math/vector_math_64.dart';
 
 Vector2 project(Vector3 point, double rotation) {
   final viewMatrix = makeViewMatrix(
-    Vector3(
-          0,
-          math.cos(rotation),
-          math.sin(rotation),
-        ) *
-        2,
-    Vector3.all(0.5),
+    Matrix4.rotationX(rotation) *
+        Matrix4.rotationY(rotation) *
+        Vector3.all(0.5),
+    Vector3.all(0),
     Vector3(1, 0, 0),
   );
 
