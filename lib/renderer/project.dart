@@ -1,10 +1,11 @@
 import 'dart:math' as math;
+
 import 'package:vector_math/vector_math_64.dart';
 
-Vector2 project(Vector3 point, double rotation) {
+Vector2 project(Vector3 point, double rotation, double aspectRatio) {
   final viewMatrix = makeViewMatrix(
     Vector3(
-          0,
+          0.25,
           math.cos(rotation),
           math.sin(rotation),
         ) *
@@ -14,9 +15,8 @@ Vector2 project(Vector3 point, double rotation) {
   );
 
   const near = 1.0;
-  const fov = 120.0;
+  const fov = 60.0;
   const zoom = 1.0;
-  const aspectRatio = 1.0;
   final double top = near * math.tan(radians(fov) / 2.0) / zoom;
   final double bottom = -top;
   final double right = top * aspectRatio;

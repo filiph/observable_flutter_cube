@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:observable_flutter_cube/renderer/object_3d.dart';
 import 'package:observable_flutter_cube/renderer/project.dart';
@@ -29,12 +30,18 @@ class _View3DState extends State<View3D> with SingleTickerProviderStateMixin {
     _controller.repeat();
   }
 
-  void stopAnimation() => _controller.stop();
+  void _stopStartAnimation() {
+    if (_controller.isAnimating) {
+      _controller.stop();
+    } else {
+      _controller.repeat();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: stopAnimation,
+      onTap: _stopStartAnimation,
       child: CustomPaint(
         painter: _View3DPainter(
           widget.object,
@@ -66,9 +73,12 @@ class _View3DPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    var aspectRatio = size.width / size.height;
+
     for (final (i, point) in object.points.indexed) {
       const pointSize = 5.0;
-      var screenPoint = project(point, animation.value * math.pi * 2);
+      var screenPoint =
+          project(point, animation.value * math.pi * 2, aspectRatio);
 
       var color = _palette[i % _palette.length];
       _paint.color = color;
